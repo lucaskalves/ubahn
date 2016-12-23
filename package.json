@@ -1,0 +1,26 @@
+{
+  "name": "ubahn",
+  "version": "1.0.0",
+  "description": "A command line application that helps you moving around your computer",
+  "main": "core.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucaskalves/ubahn.git"
+  },
+  "keywords": [
+    "cd",
+    "command",
+    "shell",
+    "move",
+    "util"
+  ],
+  "author": "Lucas Alves <lucaskalves@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lucaskalves/ubahn/issues"
+  },
+  "homepage": "https://github.com/lucaskalves/ubahn#readme"
+}
