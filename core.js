@@ -3,125 +3,86 @@
 'use strict';
 
 const commandLineCommands = require('command-line-commands')
-const jsonfile = require('jsonfile')
-const sh = require("shelljs");
+const jsonfile            = require('jsonfile')
+const sh                  = require("shelljs");
 
-function getUserHome() {
-  return process.env.HOME || process.env.USERPROFILE;
-}
-
-const validCommands = [ null, 'list', 'to', 'add', 'rm', 'clear' ];
+const validCommands  = [ null, 'list', 'to', 'add', 'rm', 'clear' ];
 const commandAndArgs = commandLineCommands(validCommands);
-const command = commandAndArgs.command;
-const args = commandAndArgs.argv;
-
+const command        = commandAndArgs.command;
+const args           = commandAndArgs.argv;
+const userHome       = process.env.HOME || process.env.USERPROFILE;
 
 var ubahn = {};
 ubahn.package  = require('./package.json');
 ubahn.version  = ubahn.package.version;
-ubahn.filepath = getUserHome() + "/.ubahnfile.json";
+ubahn.filepath = userHome + "/.ubahnfile.json";
+ubahn.stations = jsonfile.readFileSync(ubahn.filepath) || [];
 
-
-if(command == "list") {
-
-  jsonfile.readFile(ubahn.filepath, function(err, obj) {
-    if (obj && obj.length > 0) {
-      obj.map(function(entry) {
-        console.log(entry.shortname + ": " + entry.path);
-      });
-    } else {
-      console.log("ubahn is empty");
-    }
-  });
+if (command == "list") {
+  if (ubahn.stations.length > 0) {
+    ubahn.stations.map(function(station) {
+      console.log(station.shortname + ": " + station.path);
+    });
+  } else {
+    console.log("ubahn is empty");
+  }
 
 } else if (command == "add") {
   var shortname = args[0];
-  var path = args[1];
+  var path      = args[1] || sh.pwd();
 
-  if(!path) {
-    path = sh.pwd();
-  }
+  if (shortname) {
+    var station = {};
+    station.shortname = shortname;
+    station.path      = path;
+    ubahn.stations.push(station);
 
-  if(shortname) {
-    jsonfile.readFile(ubahn.filepath, function(err, obj) {
-      if (!obj) {
-        obj = [];
-      }
-        var entry = {};
-        entry.shortname = shortname;
-        entry.path = path;
-        obj.push(entry);
-
-        jsonfile.writeFile(ubahn.filepath, obj, function (err) {
-          if(err) {
-            console.error(err);
-          } else {
-            console.log("Added " + shortname + " to ubahn")
-}
-        });
-    });
+    jsonfile.writeFileSync(ubahn.filepath, ubahn.stations);
+    console.log("Added " + shortname)
   } else {
-    console.log("You must specify a directory shortname.");
+    console.error("You must specify a directory shortname.");
   }
 
 } else if (command == "to") {
   var shortname = args[0];
 
-  if(shortname) {
-    jsonfile.readFile(ubahn.filepath, function(err, obj) {
-      if (obj) {
-        var entry = obj.find(function(element, index, array) {
-          return element.shortname == shortname;
-        });
+  if (shortname) {
+    if (ubahn.stations.length > 0) {
+      var entry = ubahn.stations.find(function(element, index, array) {
+        return element.shortname == shortname;
+      });
 
-        if(entry) {
-          console.log(entry.path);
-          process.exit(42);
-        } else {
-          console.log(shortname + " not found");
-        }
+      if (entry) {
+        console.log(entry.path);
+        process.exit(42);
       } else {
-        console.log("ubahn is empty");
+        console.error(shortname + " not found");
       }
-    });
+    } else {
+      console.error("ubahn is empty");
+    }
   } else {
-    console.log("You must specify a directory shortname.");
+    console.error("You must specify a directory shortname.");
   }
-
 
 } else if (command == "rm") {
   var shortname = args[0];
 
-  if(shortname) {
-    jsonfile.readFile(ubahn.filepath, function(err, obj) {
-      if (!obj) {
-        obj = [];
-      }
-
-      obj = obj.filter(function(entry) {
-        return entry.shortname != shortname;
-      });
-
-      jsonfile.writeFile(ubahn.filepath, obj, function (err) {
-        if(err) {
-          console.error(err);
-        } else {
-          console.log("Removed " + shortname + " from ubahn")
-        }
-      });
+  if (shortname) {
+    ubahn.stations = ubahn.stations.filter(function(entry) {
+      return entry.shortname != shortname;
     });
+
+    jsonfile.writeFileSync(ubahn.filepath, ubahn.stations);
+    console.log("Removed " + shortname);
   } else {
-    console.log("You must specify a directory shortname.");
+    console.error("You must specify a directory shortname.");
   }
 
-} else if(command == "clear") {
-  jsonfile.writeFile(ubahn.filepath, [], function (err) {
-    if(err) {
-      console.error(err);
-    } else {
-      console.log("Removed all stations from ubahn");
-    }
-  });
+} else if (command == "clear") {
+  ubahn.stations = [];
+  jsonfile.writeFile(ubahn.filepath, ubahn.stations);
+  console.log("Removed all stations from ubahn");
 } else {
   console.log("ubahn " + ubahn.version);
   console.log("usage: ubahn <command> [<args>]\n");
