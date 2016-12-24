@@ -34,12 +34,12 @@ ubahn list
 
 
 
-### Goto Directory
+### To Directory
 
 To change the current directory to one saved in *ubahn*, run this command:
 
 ``` shell
-ubahn goto <directory short name>
+ubahn to <shortname>
 ```
 
 
@@ -48,10 +48,10 @@ ubahn goto <directory short name>
 To add a new directory, run this command:
 
 ``` shell
-ubahn add <directory short name> [directory path]
+ubahn add <shortname> [directory path]
 ```
 
-The *directory short name* cannot contain spaces and should have at most 6 characters. The directory path may be omitted. That will make the current directory to be added to *ubahn*.
+The *short name* cannot contain spaces. The directory path may be omitted. That will make the current directory to be added to *ubahn*.
 
 
 ## Remove Directory
@@ -59,7 +59,7 @@ The *directory short name* cannot contain spaces and should have at most 6 chara
 To remove a directory, run this command:
 
 ``` shell
-ubahn rm <directory short name>
+ubahn rm <shortname>
 ```
 
 ## Remove all Directories

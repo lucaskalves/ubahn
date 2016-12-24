@@ -10,7 +10,7 @@ function getUserHome() {
   return process.env.HOME || process.env.USERPROFILE;
 }
 
-const validCommands = [ null, 'list', 'goto', 'add', 'rm', 'clear' ];
+const validCommands = [ null, 'list', 'to', 'add', 'rm', 'clear' ];
 const commandAndArgs = commandLineCommands(validCommands);
 const command = commandAndArgs.command;
 const args = commandAndArgs.argv;
@@ -64,7 +64,7 @@ if(command == "list") {
     console.log("You must specify a directory shortname.");
   }
 
-} else if (command == "goto") {
+} else if (command == "to") {
   var shortname = args[0];
 
   if(shortname) {
@@ -127,7 +127,7 @@ if(command == "list") {
   console.log("usage: ubahn <command> [<args>]\n");
   console.log("commands:\n");
   console.log("list                   List all directories saved on ubahn");
-  console.log("goto <shortname>       Change directory to the one specified");
+  console.log("to <shortname>       Change directory to the one specified");
   console.log("add <shortname> [path] Add a new directory to ubahn. If path is empty, it gets the current one.");
   console.log("rm <shortname>         Remove a directory from ubahn");
   console.log("clear                  Remove all directories from ubahn");
