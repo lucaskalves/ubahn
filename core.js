@@ -7,7 +7,7 @@ var jsonfile = require('jsonfile')
 
 const ubahnFilePath = "./ubahnfile.json";
 
-const validCommands = [ null, 'list', 'goto', 'add', 'remove' ];
+const validCommands = [ null, 'list', 'goto', 'add', 'rm' ];
 const commandAndArgs = commandLineCommands(validCommands);
 const command = commandAndArgs.command;
 const args = commandAndArgs.argv;
@@ -20,12 +20,12 @@ ubahn.version = ubahn.package.version;
 if(command == "list") {
 
   jsonfile.readFile(ubahnFilePath, function(err, obj) {
-    if (obj) {
+    if (obj && obj.length > 0) {
       obj.map(function(entry) {
-        console.log("echo " + entry.shortname + ": " + entry.path);
+        console.log(entry.shortname + ": " + entry.path);
       });
     } else {
-      console.log("echo ubahn is empty");
+      console.log("ubahn is empty");
     }
   });
 
@@ -49,12 +49,14 @@ if(command == "list") {
 
         jsonfile.writeFile(ubahnFilePath, obj, function (err) {
           if(err) {
-            console.error("echo " + err);
-          }
+            console.error(err);
+          } else {
+            console.log("Added " + shortname + " to ubahn")
+}
         });
     });
   } else {
-    console.log("echo You must specify a directory shortname.");
+    console.log("You must specify a directory shortname.");
   }
 
 } else if (command == "goto") {
@@ -68,21 +70,45 @@ if(command == "list") {
         });
 
         if(entry) {
-          console.log("cd " + entry.path);
+          console.log(entry.path);
+          process.exit(42);
         } else {
-          console.log("echo " + shortname + " not found");
+          console.log(shortname + " not found");
         }
       } else {
-        console.log("echo ubahn is empty");
+        console.log("ubahn is empty");
       }
     });
   } else {
-    console.log("echo You must specify a directory shortname.");
+    console.log("You must specify a directory shortname.");
   }
 
 
-} else if (command == "remove") {
+} else if (command == "rm") {
+  var shortname = args[0];
+
+  if(shortname) {
+    jsonfile.readFile(ubahnFilePath, function(err, obj) {
+      if (!obj) {
+        obj = [];
+      }
+
+      obj = obj.filter(function(entry) {
+        return entry.shortname != shortname;
+      });
+
+      jsonfile.writeFile(ubahnFilePath, obj, function (err) {
+        if(err) {
+          console.error(err);
+        } else {
+          console.log("Removed " + shortname + " from ubahn")
+        }
+      });
+    });
+  } else {
+    console.log("You must specify a directory shortname.");
+  }
 
 } else {
-  console.log("echo ubahn " + ubahn.version);
+  console.log("ubahn " + ubahn.version);
 }
