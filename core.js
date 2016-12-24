@@ -10,8 +10,6 @@ function getUserHome() {
   return process.env.HOME || process.env.USERPROFILE;
 }
 
-const ubahnFilePath = getUserHome() + "/.ubahnfile.json";
-
 const validCommands = [ null, 'list', 'goto', 'add', 'rm', 'clear' ];
 const commandAndArgs = commandLineCommands(validCommands);
 const command = commandAndArgs.command;
@@ -19,12 +17,14 @@ const args = commandAndArgs.argv;
 
 
 var ubahn = {};
-ubahn.package = require('./package.json');
-ubahn.version = ubahn.package.version;
+ubahn.package  = require('./package.json');
+ubahn.version  = ubahn.package.version;
+ubahn.filepath = getUserHome() + "/.ubahnfile.json";
+
 
 if(command == "list") {
 
-  jsonfile.readFile(ubahnFilePath, function(err, obj) {
+  jsonfile.readFile(ubahn.filepath, function(err, obj) {
     if (obj && obj.length > 0) {
       obj.map(function(entry) {
         console.log(entry.shortname + ": " + entry.path);
@@ -43,7 +43,7 @@ if(command == "list") {
   }
 
   if(shortname) {
-    jsonfile.readFile(ubahnFilePath, function(err, obj) {
+    jsonfile.readFile(ubahn.filepath, function(err, obj) {
       if (!obj) {
         obj = [];
       }
@@ -52,7 +52,7 @@ if(command == "list") {
         entry.path = path;
         obj.push(entry);
 
-        jsonfile.writeFile(ubahnFilePath, obj, function (err) {
+        jsonfile.writeFile(ubahn.filepath, obj, function (err) {
           if(err) {
             console.error(err);
           } else {
@@ -68,7 +68,7 @@ if(command == "list") {
   var shortname = args[0];
 
   if(shortname) {
-    jsonfile.readFile(ubahnFilePath, function(err, obj) {
+    jsonfile.readFile(ubahn.filepath, function(err, obj) {
       if (obj) {
         var entry = obj.find(function(element, index, array) {
           return element.shortname == shortname;
@@ -93,7 +93,7 @@ if(command == "list") {
   var shortname = args[0];
 
   if(shortname) {
-    jsonfile.readFile(ubahnFilePath, function(err, obj) {
+    jsonfile.readFile(ubahn.filepath, function(err, obj) {
       if (!obj) {
         obj = [];
       }
@@ -102,7 +102,7 @@ if(command == "list") {
         return entry.shortname != shortname;
       });
 
-      jsonfile.writeFile(ubahnFilePath, obj, function (err) {
+      jsonfile.writeFile(ubahn.filepath, obj, function (err) {
         if(err) {
           console.error(err);
         } else {
@@ -115,7 +115,7 @@ if(command == "list") {
   }
 
 } else if(command == "clear") {
-  jsonfile.writeFile(ubahnFilePath, [], function (err) {
+  jsonfile.writeFile(ubahn.filepath, [], function (err) {
     if(err) {
       console.error(err);
     } else {
@@ -124,4 +124,11 @@ if(command == "list") {
   });
 } else {
   console.log("ubahn " + ubahn.version);
+  console.log("usage: ubahn <command> [<args>]\n");
+  console.log("commands:\n");
+  console.log("list                   List all directories saved on ubahn");
+  console.log("goto <shortname>       Change directory to the one specified");
+  console.log("add <shortname> [path] Add a new directory to ubahn. If path is empty, it gets the current one.");
+  console.log("rm <shortname>         Remove a directory from ubahn");
+  console.log("clear                  Remove all directories from ubahn");
 }
