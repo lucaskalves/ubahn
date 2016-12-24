@@ -28,6 +28,7 @@
   "homepage": "https://github.com/lucaskalves/ubahn#readme",
   "dependencies": {
     "command-line-commands": "^1.0.4",
-    "jsonfile": "^2.4.0"
+    "jsonfile": "^2.4.0",
+    "shelljs": "^0.7.5"
   }
 }

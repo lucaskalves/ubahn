@@ -3,7 +3,8 @@
 'use strict';
 
 const commandLineCommands = require('command-line-commands')
-var jsonfile = require('jsonfile')
+const jsonfile = require('jsonfile')
+const sh = require("shelljs");
 
 function getUserHome() {
   return process.env.HOME || process.env.USERPROFILE;
@@ -38,7 +39,7 @@ if(command == "list") {
   var path = args[1];
 
   if(!path) {
-    path = __dirname;
+    path = sh.pwd();
   }
 
   if(shortname) {
