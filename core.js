@@ -87,9 +87,9 @@ if (command == "list") {
   console.log("ubahn " + ubahn.version);
   console.log("usage: ubahn <command> [<args>]\n");
   console.log("commands:\n");
-  console.log("list                   List all directories saved on ubahn");
-  console.log("to <shortname>       Change directory to the one specified");
-  console.log("add <shortname> [path] Add a new directory to ubahn. If path is empty, it gets the current one.");
-  console.log("rm <shortname>         Remove a directory from ubahn");
-  console.log("clear                  Remove all directories from ubahn");
+  console.log("list                    List all directories saved on ubahn");
+  console.log("to <shortname>          Change directory to the one specified");
+  console.log("add <shortname> [path]  Add a new directory to ubahn. If path is empty, it gets the current one.");
+  console.log("rm <shortname>          Remove a directory from ubahn");
+  console.log("clear                   Remove all directories from ubahn");
 }
