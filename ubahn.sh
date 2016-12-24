@@ -7,5 +7,3 @@ function ubahn() {
   else echo "$OUTPUT"
   fi
 }
-
-fpath=(`pwd` $fpath)
