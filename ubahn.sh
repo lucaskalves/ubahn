@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function ubahn() {
-  OUTPUT=`./core.js $@`
+  OUTPUT=`ubahn-wrapper $@`
   if [ $? -eq 42 ]
   then cd "$OUTPUT"
   else echo "$OUTPUT"

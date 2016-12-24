@@ -5,7 +5,11 @@
 const commandLineCommands = require('command-line-commands')
 var jsonfile = require('jsonfile')
 
-const ubahnFilePath = "./ubahnfile.json";
+function getUserHome() {
+  return process.env.HOME || process.env.USERPROFILE;
+}
+
+const ubahnFilePath = getUserHome() + "/.ubahnfile.json";
 
 const validCommands = [ null, 'list', 'goto', 'add', 'rm' ];
 const commandAndArgs = commandLineCommands(validCommands);
