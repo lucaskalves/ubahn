@@ -12,7 +12,7 @@ function getUserHome() {
 
 const ubahnFilePath = getUserHome() + "/.ubahnfile.json";
 
-const validCommands = [ null, 'list', 'goto', 'add', 'rm' ];
+const validCommands = [ null, 'list', 'goto', 'add', 'rm', 'clear' ];
 const commandAndArgs = commandLineCommands(validCommands);
 const command = commandAndArgs.command;
 const args = commandAndArgs.argv;
@@ -114,6 +114,14 @@ if(command == "list") {
     console.log("You must specify a directory shortname.");
   }
 
+} else if(command == "clear") {
+  jsonfile.writeFile(ubahnFilePath, [], function (err) {
+    if(err) {
+      console.error(err);
+    } else {
+      console.log("Removed all stations from ubahn");
+    }
+  });
 } else {
   console.log("ubahn " + ubahn.version);
 }
