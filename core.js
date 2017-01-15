@@ -2,9 +2,13 @@
 
 'use strict';
 
-const commandLineCommands = require('command-line-commands')
-const jsonfile            = require('jsonfile')
+const commandLineCommands = require('command-line-commands');
+const jsonfile            = require('jsonfile');
 const sh                  = require("shelljs");
+const omelette            = require("omelette");
+
+
+
 
 const validCommands  = [ null, 'list', 'to', 'add', 'rm', 'clear' ];
 const commandAndArgs = commandLineCommands(validCommands);
@@ -17,6 +21,26 @@ ubahn.package  = require('./package.json');
 ubahn.version  = ubahn.package.version;
 ubahn.filepath = userHome + "/.ubahnfile.json";
 ubahn.stations = jsonfile.readFileSync(ubahn.filepath) || [];
+
+
+var complete = omelette("ubahn|ub <action> <station>");
+
+complete.on("action", function(){
+  this.reply(["list", "to", "add", "rm", "clear"]);
+});
+
+complete.on("station", function(action) {
+  if(action == "to") {
+    this.reply(ubahn.stations.map(function(station) {
+      return station.shortname;
+    }));
+  }
+});
+
+complete.init();
+
+
+
 
 if (command == "list") {
   if (ubahn.stations.length > 0) {
