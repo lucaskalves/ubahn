@@ -1,46 +1,39 @@
 #!/usr/bin/env node
+"use strict";
+const commandLineCommands = require("command-line-commands");
+const jsonfile = require("jsonfile");
+const sh = require("shelljs");
+const omelette = require("omelette");
 
-'use strict';
-
-const commandLineCommands = require('command-line-commands');
-const jsonfile            = require('jsonfile');
-const sh                  = require("shelljs");
-const omelette            = require("omelette");
-
-
-
-
-const validCommands  = [ null, 'list', 'to', 'add', 'rm', 'clear' ];
+const validCommands = [ null, "list", "to", "add", "rm", "clear" ];
 const commandAndArgs = commandLineCommands(validCommands);
-const command        = commandAndArgs.command;
-const args           = commandAndArgs.argv;
-const userHome       = process.env.HOME || process.env.USERPROFILE;
+const command = commandAndArgs.command;
+const args = commandAndArgs.argv;
+const userHome = process.env.HOME || process.env.USERPROFILE;
 
 var ubahn = {};
-ubahn.package  = require('./package.json');
-ubahn.version  = ubahn.package.version;
+ubahn.package = require("./package.json");
+ubahn.version = ubahn.package.version;
 ubahn.filepath = userHome + "/.ubahnfile.json";
 ubahn.stations = jsonfile.readFileSync(ubahn.filepath) || [];
 
-
 var complete = omelette("ubahn|ub <action> <station>");
 
-complete.on("action", function(){
-  this.reply(["list", "to", "add", "rm", "clear"]);
+complete.on("action", function() {
+  this.reply([ "list", "to", "add", "rm", "clear" ]);
 });
 
 complete.on("station", function(action) {
-  if(action == "to") {
-    this.reply(ubahn.stations.map(function(station) {
-      return station.shortname;
-    }));
+  if (action == "to") {
+    this.reply(
+      ubahn.stations.map(function(station) {
+        return station.shortname;
+      })
+    );
   }
 });
 
 complete.init();
-
-
-
 
 if (command == "list") {
   if (ubahn.stations.length > 0) {
@@ -50,23 +43,21 @@ if (command == "list") {
   } else {
     console.log("ubahn is empty");
   }
-
 } else if (command == "add") {
   var shortname = args[0];
-  var path      = args[1] || sh.pwd();
+  var path = args[1] || sh.pwd();
 
   if (shortname) {
     var station = {};
     station.shortname = shortname;
-    station.path      = path;
+    station.path = path;
     ubahn.stations.push(station);
 
     jsonfile.writeFileSync(ubahn.filepath, ubahn.stations);
-    console.log("Added " + shortname)
+    console.log("Added " + shortname);
   } else {
     console.error("You must specify a directory shortname.");
   }
-
 } else if (command == "to") {
   var shortname = args[0];
 
@@ -88,7 +79,6 @@ if (command == "list") {
   } else {
     console.error("You must specify a directory shortname.");
   }
-
 } else if (command == "rm") {
   var shortname = args[0];
 
@@ -102,7 +92,6 @@ if (command == "list") {
   } else {
     console.error("You must specify a directory shortname.");
   }
-
 } else if (command == "clear") {
   ubahn.stations = [];
   jsonfile.writeFile(ubahn.filepath, ubahn.stations);
@@ -113,7 +102,9 @@ if (command == "list") {
   console.log("commands:\n");
   console.log("list                    List all directories saved on ubahn");
   console.log("to <shortname>          Change directory to the one specified");
-  console.log("add <shortname> [path]  Add a new directory to ubahn. If path is empty, it gets the current one.");
+  console.log(
+    "add <shortname> [path]  Add a new directory to ubahn. If path is empty, it gets the current one."
+  );
   console.log("rm <shortname>          Remove a directory from ubahn");
   console.log("clear                   Remove all directories from ubahn");
 }
